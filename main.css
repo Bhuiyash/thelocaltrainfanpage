@@ -1,0 +1,113 @@
+body{
+    background-color: teal;
+background-image: url(projectimage/final.jpg);
+background-position: center;
+background-repeat: repeat;
+background-size: cover;
+}
+.container{
+    margin-right: auto;
+    margin-left: auto;
+    width: 1080px;
+}
+
+header{
+    height: 500px;
+   text-align: center;
+    color: rgba(255, 248, 220, 0.466);
+    font-family: 'Baskerville Old face';
+    font-size: 80px;
+    padding-top: 50px;
+ border-image-width: auto;
+ letter-spacing: 10px;
+ 
+}
+header 
+img {
+    width: 800px;
+    height: 500px;
+    opacity: 0.75;
+  }
+ header
+  img:hover{
+      opacity: 0.8;
+  }
+nav{
+    height: 180px;
+    text-align: center ;
+    font-size: medium;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+main{
+    height: 280px;
+    color: rgba(255, 255, 255, 0.74);
+    font-size:x-large;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+main p{
+    color: white;
+    font-size:large;
+    text-align: center;
+    font-weight: 200;
+    font-stretch: expanded;
+    font-family: Arial, Helvetica, sans-serif;
+}
+footer{
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.041);
+    height: 150px;
+    width: 500px;
+    color: rgb(228, 222, 222);
+}
+
+section{
+    height: 800px; 
+}
+
+
+.boxi{
+    color: rgb(223, 190, 238);
+   margin-right: auto;
+   margin-left: auto;
+   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.getinline{
+    text-align: center;
+color: rgba(188, 247, 244, 0.973);
+font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.sap{
+    opacity: .5;
+    width: 50px; height: 050px;
+  
+}
+.sap:hover{
+    opacity: .8;
+}
+
+.finallink:link, .finallink:visited {
+
+    background-color: rgba(0, 0, 0, 0.13);
+    color: rgba(245, 245, 245, 0.24);
+    padding: 15px 30px ;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.finallink:hover, .finallink:active .finallink:visited{
+    background-color: rgb(175, 30, 30);
+
+}
+.infouser
+{
+
+     text-align: center;
+     color: rgb(236, 153, 29);
+        padding-top: 200px;
+margin-left: auto;
+    margin-right: auto;
+     height: auto;
+     width: fit-content;
+}
