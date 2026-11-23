@@ -2,7 +2,7 @@ import fs from "node:fs";
 
 const {
   GH_TOKEN, JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN,
-  PR_NUMBER, PR_TITLE, BRANCH, REPO,
+  PR_NUMBER, PR_TITLE, PR_BODY, BRANCH, REPO,
 } = process.env;
 
 const MARKER = "<!-- ai-pr-review -->";
@@ -16,11 +16,17 @@ const gh = (path, opts = {}) =>
     },
   });
 
-// 1. Jira key from branch or title
+// 1. Ticket: Jira (if configured) or a GitHub Issue
 const key = `${BRANCH} ${PR_TITLE}`.match(/[A-Z][A-Z0-9]+-\d+/)?.[0];
+const jiraConfigured = JIRA_BASE_URL && JIRA_EMAIL && JIRA_API_TOKEN;
 
-let ticket = "No Jira ticket key found in branch name or PR title.";
-if (key && JIRA_BASE_URL && JIRA_EMAIL && JIRA_API_TOKEN) {
+// "#12" in title/body, or "issue-12" in the branch name
+const issueNumber =
+  `${PR_TITLE}\n${PR_BODY || ""}`.match(/#(\d+)/g)?.map((m) => m.slice(1)).find((n) => n !== PR_NUMBER) ??
+  BRANCH.match(/issue-(\d+)/i)?.[1];
+
+let ticket = "No ticket found (no Jira key, no linked GitHub issue like 'Fixes #2' in the PR).";
+if (key && jiraConfigured) {
   const auth = Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString("base64");
   // API v2 returns the description as plain text (v3 returns ADF JSON)
   const r = await fetch(
@@ -32,6 +38,16 @@ if (key && JIRA_BASE_URL && JIRA_EMAIL && JIRA_API_TOKEN) {
     ticket = `Key: ${key}\nType: ${j.fields.issuetype?.name}\nSummary: ${j.fields.summary}\nDescription / Acceptance criteria:\n${j.fields.description ?? "(empty)"}`;
   } else {
     ticket = `Could not fetch ${key} (HTTP ${r.status}).`;
+  }
+} else if (issueNumber) {
+  const r = await gh(`/issues/${issueNumber}`);
+  if (r.ok) {
+    const j = await r.json();
+    ticket = j.pull_request
+      ? `#${issueNumber} is a pull request, not an issue.`
+      : `GitHub Issue #${issueNumber}\nTitle: ${j.title}\nDescription / Acceptance criteria:\n${j.body ?? "(empty)"}`;
+  } else {
+    ticket = `Could not fetch issue #${issueNumber} (HTTP ${r.status}).`;
   }
 } else if (key) {
   ticket = `Found key ${key} but Jira secrets are not configured.`;
