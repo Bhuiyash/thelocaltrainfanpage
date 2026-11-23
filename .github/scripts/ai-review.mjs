@@ -83,7 +83,9 @@ const user = `### Jira ticket\n${ticket}\n\n### Client requirements\n${requireme
 const ai = await fetch("https://models.github.ai/inference/chat/completions", {
   method: "POST",
   headers: {
+    Accept: "application/vnd.github+json",
     Authorization: `Bearer ${GH_TOKEN}`,
+    "X-GitHub-Api-Version": "2022-11-28",
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
@@ -95,8 +97,14 @@ const ai = await fetch("https://models.github.ai/inference/chat/completions", {
     ],
   }),
 });
-if (!ai.ok) throw new Error(`Models API failed: ${ai.status} ${await ai.text()}`);
-const review = (await ai.json()).choices[0].message.content;
+const aiText = await ai.text();
+if (!ai.ok) throw new Error(`Models API failed: ${ai.status} ${aiText}`);
+let review;
+try {
+  review = JSON.parse(aiText).choices[0].message.content;
+} catch {
+  throw new Error(`Unexpected Models API response (HTTP ${ai.status}): ${aiText.slice(0, 500)}`);
+}
 
 // 5. Post or update a single comment
 const body = `${MARKER}\n# 🤖 AI PR Review\n${review}`;
